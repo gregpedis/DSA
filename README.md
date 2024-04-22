@@ -1,2 +1,13 @@
 # DSA
-Data Structures + Algorithms
+
+Data Structures and Algorithms implementations.
+
+## TODO
+
+### Data Structures
+
+- ???
+
+### Algorithms
+
+- ???
