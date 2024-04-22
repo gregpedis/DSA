@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # SonarQube
 .sonarqube/
+
+# Mono appears for some reason
+.mono/
