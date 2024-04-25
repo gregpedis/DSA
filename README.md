@@ -13,7 +13,7 @@ Look for more [here](https://en.wikipedia.org/wiki/List_of_data_structures).
 
 ### Data Structures
 
-- List
+- List :white_check_mark:
 - Linked List
 - Doubly Linked List
 - HashSet

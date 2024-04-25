@@ -17,12 +17,6 @@ public class List2<T> : IList<T>
 		_count = 0;
 	}
 
-	public List2(int capacity)
-	{
-		_items = new T[capacity];
-		_count = 0;
-	}
-
 	public List2(IEnumerable<T> collection)
 	{
 		_items = collection.ToArray();
@@ -34,27 +28,13 @@ public class List2<T> : IList<T>
 
 	public T this[int index]
 	{
-#pragma warning disable S3358 // Ternary operators should not be nested
-		get =>
-			index >= _items.Length ? throw new ArgumentOutOfRangeException(nameof(index), "{0} is equal or greater than Count")
-			: index < 0 ? throw new ArgumentOutOfRangeException(nameof(index), "{0} is less than zero")
+		get => (index < 0 || index >= _count)
+			? throw new ArgumentOutOfRangeException(nameof(index))
 			: _items[index];
-#pragma warning restore S3358 // Ternary operators should not be nested
-		set
-		{
-			if (index >= _items.Length)
-			{
-				throw new ArgumentOutOfRangeException(nameof(index), "{0} is equal or greater than Count");
-			}
-			else if (index < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(index), "{0} is less than zero");
-			}
-			else
-			{
-				_items[index] = value;
-			}
-		}
+
+		set => _items[index] = index < 0 || index >= _count
+			? throw new ArgumentOutOfRangeException(nameof(index))
+			: value;
 	}
 
 	public void Add(T item)
@@ -76,17 +56,8 @@ public class List2<T> : IList<T>
 		_count = 0;
 	}
 
-	public bool Contains(T item)
-	{
-		foreach (var x in _items)
-		{
-			if (EqualityComparer<T>.Default.Equals(x, item))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+	public bool Contains(T item) =>
+		IndexOf(item) >= 0;
 
 	public void CopyTo(T[] array, int arrayIndex)
 	{
@@ -100,12 +71,12 @@ public class List2<T> : IList<T>
 		}
 		else if (array.Length - arrayIndex < _count)
 		{
-			throw new ArgumentException("{0} does not have enough space", nameof(array));
+			throw new ArgumentException("Not enough space", nameof(array));
 		}
 
-		foreach (var item in _items)
+		for (int i = 0; i < _count; i++)
 		{
-			array[arrayIndex] = item;
+			array[arrayIndex] = _items[i];
 			arrayIndex++;
 		}
 	}
@@ -122,22 +93,39 @@ public class List2<T> : IList<T>
 		return -1;
 	}
 
+	// TODO: This implementation is wrong. It should insert it by growing the list and filling the spot with item.
 	public void Insert(int index, T item)
 	{
-
-		throw new NotImplementedException();
+		if (_count == index)
+		{
+			Add(item);
+		}
+		else
+		{
+			this[index] = item;
+		}
 	}
 
 	public bool Remove(T item)
 	{
-		throw new NotImplementedException();
+		var index = IndexOf(item);
+		if (index >= 0)
+		{
+			RemoveAt(index);
+			return true;
+		}
+
+		return false;
 	}
 
 	public void RemoveAt(int index)
 	{
-		throw new NotImplementedException();
+		ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _count);
+		Array.Copy(_items, index + 1, _items, index, _count - index - 1);
+		_count--;
 	}
 
 	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-	public IEnumerator<T> GetEnumerator() => _items.AsEnumerable().GetEnumerator();
+
+	public IEnumerator<T> GetEnumerator() => _items.Take(_count).GetEnumerator();
 }
