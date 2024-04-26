@@ -29,7 +29,7 @@ Look for more [here](https://en.wikipedia.org/wiki/List_of_data_structures).
 
 ### Algorithms
 
-- Binary Search
+- Binary Search :white_check_mark:
 - BFS
 - DFS
 - Quick Sort
